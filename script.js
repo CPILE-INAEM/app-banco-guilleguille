@@ -35,6 +35,13 @@ const account4 = {
 
 const accounts = [account1, account2, account3, account4];
 
+// init data:
+const createUsernames = function () {
+  accounts.forEach((account) => {
+    account.username = account.owner.split(' ').map(name => name[0]).join('').toLowerCase();
+  });
+};
+
 // Elements
 const labelWelcome = document.querySelector('.welcome');
 const labelDate = document.querySelector('.date');
@@ -60,3 +67,36 @@ const inputTransferAmount = document.querySelector('.form__input--amount');
 const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
+
+
+console.log(accounts);
+createUsernames();
+
+btnLogin.addEventListener('click', (e) => {
+  e.preventDefault();
+  const username = inputLoginUsername.value;
+  const pin = Number(inputLoginPin.value);
+  console.log(`Intento de login con usuario ${username} y el pin ${pin}`);
+
+  // Find:
+  const currentAccount = accounts.find(
+    (account) => account.username === username
+  );
+
+  // Puede ser null si el usuario no existe.
+
+  console.log('Current account: ', currentAccount);
+
+
+
+  // currentAccount && currentAccount.pin === currentAccount?.pin (ambas hacen lo mismo)
+
+  if (currentAccount?.pin === pin) {
+    console.log(`Login correcto.`);
+    containerApp.style.opacity = 1;
+    labelWelcome.textContent = `Bienvenido, usuario ${currentAccount.owner.split(' ')[0]}`;
+  } else {
+    console.log(`Login incorrecto.`);
+  }
+  
+});
