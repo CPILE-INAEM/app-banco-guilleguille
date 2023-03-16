@@ -95,8 +95,79 @@ btnLogin.addEventListener('click', (e) => {
     console.log(`Login correcto.`);
     containerApp.style.opacity = 1;
     labelWelcome.textContent = `Bienvenido, usuario ${currentAccount.owner.split(' ')[0]}`;
+
+    // Limpiar datos:
+    inputLoginUsername.value = inputLoginPin.value = '';
+    inputLoginPin.blur();
+
+    // Mostrar datos:
+    updateUI(currentAccount);
   } else {
     console.log(`Login incorrecto.`);
   }
-  
 });
+
+
+const updateUI = (currentAccount) => {
+  // Obtener movimientos:
+  // const movements = currentAccount.movements;
+
+  // Mostrar movimientos:
+  displayMovements(currentAccount);
+
+  // Mostrar balance:
+  calcAndDisplayBalance(currentAccount.movements);
+
+  // Mostrar resumen:
+  calcAndDisplaySummary(currentAccount);
+}
+
+const displayMovements = (currentAccount) => {
+  // Limpar movimientos antiguos:
+  // document.querySelector('.movements').innerHTML = '';
+
+  // Insertarlos con insertAdjacentHTML:
+
+  const { movements } = currentAccount;
+  containerMovements.innerHTML = "";
+
+  movements.forEach((mov, i) => {
+    const type = mov > 0 ? `deposit` : `withdrawal`;
+
+    const movHTML = `<div class="movements__row">
+          <div class="movements__type movements__type--${type}">${i+1} - ${type}</div>
+          <div class="movements__date"></div>
+          <div class="movements__value">${mov.toFixed(2)} €</div>
+          </div>`;
+
+    containerMovements.insertAdjacentHTML("afterbegin", movHTML);
+  });
+
+}
+
+const calcAndDisplayBalance = (movements) => {
+  const balance = movements.reduce((acc, mov) => acc + mov, 0);
+  labelBalance.textContent = `${balance.toFixed(2)} €`;
+}
+
+const calcAndDisplaySummary = (currentAccount) => {
+  const { movements } = currentAccount;
+  const incomes = movements.filter(mov => mov > 0).reduce((acc, mov) => acc + mov, 0);
+  labelSumIn.textContent = `${incomes.toFixed(2)} €`;
+
+  const out = movements.filter(mov => mov < 0).reduce((acc, mov) => acc + mov, 0);
+  labelSumOut.textContent = `${Math.abs(out).toFixed(2)} €`;
+
+  // Cálculo de intereses:
+  // Teniendo en cuenta solo ingresos superiores a 100 €.
+  // y que el interés de cada usuario es del 1,2 %
+  // Y que los interes sean superiores a 2 €.
+
+  const interest = movements
+    .filter((mov) => mov > 100)
+    .map((mov) => (mov * currentAccount.interestRate) / 100)
+    .filter((int) => int >= 2)
+    .reduce((acc, int) => acc + int, 0);
+
+  labelSumInterest.textContent = `${interest.toFixed(2)} €`;
+}
