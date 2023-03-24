@@ -213,3 +213,14 @@ const calcAndDisplaySummary = (currentAccount) => {
 
   labelSumInterest.textContent = `${interest.toFixed(2)} €`;
 };
+
+// Ordenar fechas:
+
+btnSort.addEventListener("click", sortMovements);
+
+const sortMovements = (currentAccount) => {
+  // const { movements } = currentAccount;
+  // const order = movements.date;
+  // Hay que acceder a las fechas (date) a través de movements. Al acceder a ellas, las recogemos todas para luego hacer una comparación y reordenarlas (sort):
+  // ¿Cómo hemos accedido a esos valores anteriormente? La clave está en currentAccount.
+};
