@@ -39,14 +39,29 @@ const account2 = {
 
 const account3 = {
   owner: "Estefanía Pueyo",
-  movements: [200, -200, 340, -300, -20, 50, 400, -460],
+  movements: [
+    { date: "2022-01-01", movements: 200 },
+    { date: "2022-04-03", movements: -200 },
+    { date: "2022-10-01", movements: 340 },
+    { date: "2021-06-06", movements: -300 },
+    { date: "2019-03-28", movements: -20 },
+    { date: "2022-01-06", movements: 50 },
+    { date: "2020-12-25", movements: 400 },
+    { date: "2022-11-01", movements: -460 },
+  ],
   interestRate: 0.7,
   pin: 3333,
 };
 
 const account4 = {
   owner: "Javier Rodríguez",
-  movements: [430, 1000, 700, 50, 90],
+  movements: [
+    { date: "2022-01-09", movements: 430 },
+    { date: "2019-09-22", movements: 1000 },
+    { date: "2023-01-21", movements: 700 },
+    { date: "2021-11-21", movements: 50 },
+    { date: "2022-10-17", movements: 90 },
+  ],
   interestRate: 1,
   pin: 4444,
 };
