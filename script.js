@@ -155,6 +155,9 @@ const updateUI = (currentAccount) => {
 
   // Mostrar resumen:
   calcAndDisplaySummary(currentAccount);
+
+  // Prueba de sort sin usar el botón:
+  sortDates(currentAccount);
 };
 
 const displayMovements = (currentAccount) => {
@@ -216,11 +219,32 @@ const calcAndDisplaySummary = (currentAccount) => {
 
 // Ordenar fechas:
 
-btnSort.addEventListener("click", sortMovements);
+let sort = true;
 
-const sortMovements = (currentAccount) => {
-  // const { movements } = currentAccount;
-  // const order = movements.date;
-  // Hay que acceder a las fechas (date) a través de movements. Al acceder a ellas, las recogemos todas para luego hacer una comparación y reordenarlas (sort):
-  // ¿Cómo hemos accedido a esos valores anteriormente? La clave está en currentAccount.AAA
-};
+const sortDates = (currentAccount) => {
+  const { movements } = currentAccount;
+
+  if(sort) {
+    movements.sort(function compare(a, b) {
+    var dateA = new Date(a.date);
+    var dateB = new Date(b.date);
+    sort = false;
+    return dateA - dateB;
+  });
+  } else {
+    movements.sort(function compare(a, b) {
+      const dateA = new Date(a.date);
+      const dateB = new Date(b.date);
+      sort = true;
+      return dateB - dateA;
+    });
+  };
+
+  displayMovements(currentAccount);
+  };
+
+// Pendiente de implementar sortDates en el botón.
+btnSort.addEventListener("click", (e) => {
+  e.preventDefault();
+  sortDates();
+});
