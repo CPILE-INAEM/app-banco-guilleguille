@@ -105,6 +105,9 @@ const inputLoanAmount = document.querySelector(".form__input--loan-amount");
 const inputCloseUsername = document.querySelector(".form__input--user");
 const inputClosePin = document.querySelector(".form__input--pin");
 
+let activeAccount = {};
+let sort = true;
+
 console.log(accounts);
 createUsernames();
 
@@ -135,6 +138,7 @@ btnLogin.addEventListener("click", (e) => {
     // Limpiar datos:
     inputLoginUsername.value = inputLoginPin.value = "";
     inputLoginPin.blur();
+    activeAccount = currentAccount;
 
     // Mostrar datos:
     updateUI(currentAccount);
@@ -145,7 +149,8 @@ btnLogin.addEventListener("click", (e) => {
 
 const updateUI = (currentAccount) => {
   // Obtener movimientos:
-  // const movements = currentAccount.movements;
+  const { movements } = currentAccount;
+  console.log(`Movimientos: `, movements);
 
   // Mostrar movimientos:
   displayMovements(currentAccount);
@@ -156,7 +161,7 @@ const updateUI = (currentAccount) => {
   // Mostrar resumen:
   calcAndDisplaySummary(currentAccount);
 
-  // Prueba de sort sin usar el botón:
+  // Mostrar operaciones más recientes por defecto:
   sortDates(currentAccount);
 };
 
@@ -219,10 +224,8 @@ const calcAndDisplaySummary = (currentAccount) => {
 
 // Ordenar fechas:
 
-let sort = true;
-
-const sortDates = (currentAccount) => {
-  const { movements } = currentAccount;
+const sortDates = () => {
+  const { movements } = activeAccount;
 
   if(sort) {
     movements.sort(function compare(a, b) {
@@ -240,10 +243,9 @@ const sortDates = (currentAccount) => {
     });
   };
 
-  displayMovements(currentAccount);
-  };
+  displayMovements(activeAccount);
+};
 
-// Pendiente de implementar sortDates en el botón.
 btnSort.addEventListener("click", (e) => {
   e.preventDefault();
   sortDates();
