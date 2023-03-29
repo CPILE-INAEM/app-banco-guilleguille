@@ -303,16 +303,22 @@ btnTransfer.addEventListener("click", (e) => {
 });
 
 // Cerrar cuenta:
-// Hay que borrar la cuenta de la persona que ha iniciado sesión tras recibir su nombre de usuario y código pin y cerrar sesión.
-// Orden de acciones: ¿Primero se cierra sesión y luego se elimina el objeto del array? Es posible que la iterfaz dé problemas si fuera al reves.
 
 const closeAccount = function () {
-  console.log(activeAccount);
+  const usernameClose = inputCloseUsername.value;
+  const pinClose = Number(inputClosePin.value);
+  console.log(`Close: ${usernameClose}`);
+  console.log(`Close: ${pinClose}`);
+  
+  if (activeAccount.username === usernameClose && activeAccount.pin === pinClose) {
+    console.log(`Login close correcto.`);
+    console.log(activeAccount);
+  } else {
+    alert(`Login close incorrecto.`);
+  };
 };
 
 btnClose.addEventListener("click", (e) => {
   e.preventDefault();
   closeAccount();
-  console.log("Le has dado al botón Close");
-  // alert("Has elimitado tu cuenta");
 });
