@@ -141,6 +141,8 @@ btnLogin.addEventListener("click", (e) => {
     activeAccount = currentAccount;
     inputTransferAmount.value = "";
     inputTransferTo.value = "";
+    inputCloseUsername.value = "";
+    inputClosePin.value = "";
 
     // Mostrar datos:
     updateUI(currentAccount);
@@ -304,17 +306,42 @@ btnTransfer.addEventListener("click", (e) => {
 
 // Cerrar cuenta:
 
+const logout = function () {
+  labelWelcome.textContent = `Log in to get started`;
+  containerApp.style.opacity = 0;
+};
+
 const closeAccount = function () {
   const usernameClose = inputCloseUsername.value;
-  const pinClose = Number(inputClosePin.value);
   console.log(`Close: ${usernameClose}`);
+  const pinClose = Number(inputClosePin.value);
   console.log(`Close: ${pinClose}`);
   
   if (activeAccount.username === usernameClose && activeAccount.pin === pinClose) {
     console.log(`Login close correcto.`);
-    console.log(activeAccount);
+    // console.log(activeAccount);
+
+    if (confirm(`¿Quieres cancelar la cuenta?`) == true) {
+      const activeAccountIndex = accounts.findIndex(
+        (account) => account.username === usernameClose
+      );
+
+      console.log(`Index de cuenta activa: `, activeAccountIndex);
+      accounts.splice(activeAccountIndex, 1);
+      console.log(accounts);
+      alert(`Cuenta eliminada`);
+      logout();
+
+    } else {
+      alert(`Operación cancelada`);
+      inputCloseUsername.value = "";
+      inputClosePin.value = "";
+    } 
+
   } else {
-    alert(`Login close incorrecto.`);
+    alert(`Datos incorrectos.`);
+    inputCloseUsername.value = "";
+    inputClosePin.value = "";
   };
 };
 
