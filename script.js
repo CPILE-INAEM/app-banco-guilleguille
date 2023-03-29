@@ -133,12 +133,14 @@ btnLogin.addEventListener("click", (e) => {
     containerApp.style.opacity = 1;
     labelWelcome.textContent = `Bienvenido, usuario ${
       currentAccount.owner.split(" ")[0]
-    } $message`;
+    } `;
 
     // Limpiar datos:
     inputLoginUsername.value = inputLoginPin.value = "";
     inputLoginPin.blur();
     activeAccount = currentAccount;
+    inputTransferAmount.value = "";
+    inputTransferTo.value = "";
 
     // Mostrar datos:
     updateUI(currentAccount);
@@ -249,4 +251,53 @@ const sortDates = () => {
 btnSort.addEventListener("click", (e) => {
   e.preventDefault();
   sortDates();
+});
+
+//Hacer transferencias
+
+const transfer = function () {
+  const ammount = Number(inputTransferAmount.value);
+  console.log(`ammount = ${ammount}`);
+  const accountName = inputTransferTo.value;
+  console.log(accountName);
+  const currentBalance = Number(labelBalance.textContent);
+  console.log(`balance = ${currentBalance}`);
+
+  const targetAccount = accounts.find(
+    (account) => account.username === accountName
+  );
+
+  console.log(`targetAccount= ${targetAccount}`);
+
+  if (ammount <= 0) {
+    alert("La cantidad de la  transferencia debe ser mayor que 0");
+  } else if (!targetAccount) {
+    alert("No se encuentra la cuenta de destino");
+  } else if (ammount > currentBalance) {
+    alert("No se dispone de la cantidad especificada");
+  } else {
+    executeTransfer(targetAccount, ammount);
+  }
+};
+
+const executeTransfer = function (targetAccount, ammount) {
+  const currentDate = new Date().toJSON().slice(0, 10);
+
+  activeAccount.movements.push({
+    date: `${currentDate}`,
+    value: ammount * -1,
+  });
+
+  targetAccount.movements.push({
+    date: `${currentDate}`,
+    value: ammount,
+  });
+};
+
+btnTransfer.addEventListener("click", (e) => {
+  e.preventDefault();
+  transfer();
+  updateUI(activeAccount);
+  inputTransferAmount.value = "";
+  inputTransferTo.value = "";
 });
