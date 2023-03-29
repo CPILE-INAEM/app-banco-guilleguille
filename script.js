@@ -301,3 +301,7 @@ btnTransfer.addEventListener("click", (e) => {
   inputTransferAmount.value = "";
   inputTransferTo.value = "";
 });
+
+// Cerrar cuenta:
+// Hay que borrar la cuenta de la persona que ha iniciado sesión tras recibir su nombre de usuario y código pin y cerrar sesión.
+// Orden de acciones: ¿Primero se cierra sesión y luego se elimina el objeto del array? Es posible que la iterfaz dé problemas si fuera al reves.
