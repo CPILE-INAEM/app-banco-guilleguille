@@ -39,14 +39,29 @@ const account2 = {
 
 const account3 = {
   owner: "Estefanía Pueyo",
-  movements: [200, -200, 340, -300, -20, 50, 400, -460],
+  movements: [
+    { date: "2022-01-01", movements: 200 },
+    { date: "2022-04-03", movements: -200 },
+    { date: "2022-10-01", movements: 340 },
+    { date: "2021-06-06", movements: -300 },
+    { date: "2019-03-28", movements: -20 },
+    { date: "2022-01-06", movements: 50 },
+    { date: "2020-12-25", movements: 400 },
+    { date: "2022-11-01", movements: -460 },
+  ],
   interestRate: 0.7,
   pin: 3333,
 };
 
 const account4 = {
   owner: "Javier Rodríguez",
-  movements: [430, 1000, 700, 50, 90],
+  movements: [
+    { date: "2022-01-09", movements: 430 },
+    { date: "2019-09-22", movements: 1000 },
+    { date: "2023-01-21", movements: 700 },
+    { date: "2021-11-21", movements: 50 },
+    { date: "2022-10-17", movements: 90 },
+  ],
   interestRate: 1,
   pin: 4444,
 };
@@ -90,6 +105,9 @@ const inputLoanAmount = document.querySelector(".form__input--loan-amount");
 const inputCloseUsername = document.querySelector(".form__input--user");
 const inputClosePin = document.querySelector(".form__input--pin");
 
+let activeAccount = {};
+let sort = true;
+
 console.log(accounts);
 createUsernames();
 
@@ -120,6 +138,7 @@ btnLogin.addEventListener("click", (e) => {
     // Limpiar datos:
     inputLoginUsername.value = inputLoginPin.value = "";
     inputLoginPin.blur();
+    activeAccount = currentAccount;
 
     // Mostrar datos:
     updateUI(currentAccount);
@@ -130,7 +149,8 @@ btnLogin.addEventListener("click", (e) => {
 
 const updateUI = (currentAccount) => {
   // Obtener movimientos:
-  // const movements = currentAccount.movements;
+  const { movements } = currentAccount;
+  console.log(`Movimientos: `, movements);
 
   // Mostrar movimientos:
   displayMovements(currentAccount);
@@ -140,6 +160,9 @@ const updateUI = (currentAccount) => {
 
   // Mostrar resumen:
   calcAndDisplaySummary(currentAccount);
+
+  // Mostrar operaciones más recientes por defecto:
+  sortDates(currentAccount);
 };
 
 const displayMovements = (currentAccount) => {
@@ -199,37 +222,31 @@ const calcAndDisplaySummary = (currentAccount) => {
   labelSumInterest.textContent = `${interest.toFixed(2)} €`;
 };
 
-const transfer = function (currentAccount) {
-  const ammount = Number(inputTransferAmount.textContent);
-  const accountName = inputTransferTo.textContent;
-  const currentBalance = labelBalance.textContent;
-  const targetAccount = accounts.find(
-    (account) => account.username === accountName
-  );
+// Ordenar fechas:
 
-  if (ammount <= 0) {
-    alert("La cantidad de la  transferencia debe ser mayor que 0");
-  } else if (!targetAccount) {
-    alert("No se encuentra la cuenta de destino");
-  } else if (ammount > currentBalance) {
-    alert("No se dispone de la cantidad especificada");
+const sortDates = () => {
+  const { movements } = activeAccount;
+
+  if (sort) {
+    movements.sort(function compare(a, b) {
+      var dateA = new Date(a.date);
+      var dateB = new Date(b.date);
+      sort = false;
+      return dateA - dateB;
+    });
   } else {
-    executeTransfer(currentAccount, targetAccount, ammount);
+    movements.sort(function compare(a, b) {
+      const dateA = new Date(a.date);
+      const dateB = new Date(b.date);
+      sort = true;
+      return dateB - dateA;
+    });
   }
+
+  displayMovements(activeAccount);
 };
 
-const executeTransfer = function (currentAccount, targetAccount, ammount) {
-  const currentDate = new Date().toJSON().slice(0, 10);
-
-  currentAccount.movements.push({
-    date: `${currentDate}`,
-    value: ammount * -1,
-  });
-
-  targetAccount.movements.push({
-    date: `${currentDate}`,
-    value: ammount,
-  });
-};
-
-btnTransfer.addEventListener("click", transfer);
+btnSort.addEventListener("click", (e) => {
+  e.preventDefault();
+  sortDates();
+});
