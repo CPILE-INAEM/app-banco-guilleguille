@@ -40,14 +40,14 @@ const account2 = {
 const account3 = {
   owner: "Estefanía Pueyo",
   movements: [
-    { date: "2022-01-01", movements: 200 },
-    { date: "2022-04-03", movements: -200 },
-    { date: "2022-10-01", movements: 340 },
-    { date: "2021-06-06", movements: -300 },
-    { date: "2019-03-28", movements: -20 },
-    { date: "2022-01-06", movements: 50 },
-    { date: "2020-12-25", movements: 400 },
-    { date: "2022-11-01", movements: -460 },
+    { date: "2022-01-01", value: 200 },
+    { date: "2022-04-03", value: -200 },
+    { date: "2022-10-01", value: 340 },
+    { date: "2021-06-06", value: -300 },
+    { date: "2019-03-28", value: -20 },
+    { date: "2022-01-06", value: 50 },
+    { date: "2020-12-25", value: 400 },
+    { date: "2022-11-01", value: -460 },
   ],
   interestRate: 0.7,
   pin: 3333,
@@ -56,11 +56,11 @@ const account3 = {
 const account4 = {
   owner: "Javier Rodríguez",
   movements: [
-    { date: "2022-01-09", movements: 430 },
-    { date: "2019-09-22", movements: 1000 },
-    { date: "2023-01-21", movements: 700 },
-    { date: "2021-11-21", movements: 50 },
-    { date: "2022-10-17", movements: 90 },
+    { date: "2022-01-09", value: 430 },
+    { date: "2019-09-22", value: 1000 },
+    { date: "2023-01-21", value: 700 },
+    { date: "2021-11-21", value: 50 },
+    { date: "2022-10-17", value: 90 },
   ],
   interestRate: 1,
   pin: 4444,
@@ -76,6 +76,15 @@ const createUsernames = function () {
       .map((name) => name[0])
       .join("")
       .toLowerCase();
+  });
+};
+
+const createBalance = function () {
+  accounts.forEach((account) => {
+    account.balance = account.movements.reduce(
+      (acc, { value }) => acc + value,
+      0
+    );
   });
 };
 
@@ -110,6 +119,7 @@ let sort = true;
 
 console.log(accounts);
 createUsernames();
+createBalance();
 
 btnLogin.addEventListener("click", (e) => {
   e.preventDefault();
@@ -141,6 +151,7 @@ btnLogin.addEventListener("click", (e) => {
     activeAccount = currentAccount;
     inputTransferAmount.value = "";
     inputTransferTo.value = "";
+    inputLoanAmount.value = "";
 
     // Mostrar datos:
     updateUI(currentAccount);
@@ -158,7 +169,7 @@ const updateUI = (currentAccount) => {
   displayMovements(currentAccount);
 
   // Mostrar balance:
-  calcAndDisplayBalance(currentAccount.movements);
+  calcAndDisplayBalance(currentAccount.movements, currentAccount);
 
   // Mostrar resumen:
   calcAndDisplaySummary(currentAccount);
@@ -193,9 +204,10 @@ const displayMovements = (currentAccount) => {
   });
 };
 
-const calcAndDisplayBalance = (movements) => {
+const calcAndDisplayBalance = (movements, currentAccount) => {
   const balance = movements.reduce((acc, { value }) => acc + value, 0);
   labelBalance.textContent = `${balance.toFixed(2)} €`;
+  currentAccount["balance"] = balance;
 };
 
 const calcAndDisplaySummary = (currentAccount) => {
@@ -260,7 +272,7 @@ const transfer = function () {
   console.log(`ammount = ${ammount}`);
   const accountName = inputTransferTo.value;
   console.log(accountName);
-  const currentBalance = Number(labelBalance.textContent);
+  const currentBalance = activeAccount.balance;
   console.log(`balance = ${currentBalance}`);
 
   const targetAccount = accounts.find(
@@ -300,4 +312,41 @@ btnTransfer.addEventListener("click", (e) => {
   updateUI(activeAccount);
   inputTransferAmount.value = "";
   inputTransferTo.value = "";
+});
+
+//Petición de préstamos
+
+const Loan = function () {
+  const ammount = Number(inputLoanAmount.value);
+  const allowedAmmount = activeAccount.balance * 0.3;
+  const { hasLoan } = activeAccount;
+  console.log(allowedAmmount);
+
+  if (hasLoan == true) {
+    alert(`No puede pedir más de un préstamo a la vez`);
+  } else if (ammount <= 0) {
+    alert(`El préstamo debe ser mayor que 0`);
+  } else if (ammount > allowedAmmount) {
+    alert(
+      `Esta cuenta no está autorizada a préstamos mayores de ${allowedAmmount} €`
+    );
+  } else {
+    executeLoan(ammount);
+  }
+};
+
+const executeLoan = function (ammount) {
+  const currentDate = new Date().toJSON().slice(0, 10);
+  activeAccount.movements.push({
+    date: `${currentDate}`,
+    value: ammount,
+  });
+  activeAccount.hasLoan = true;
+};
+
+btnLoan.addEventListener("click", (e) => {
+  e.preventDefault();
+  Loan();
+  updateUI(activeAccount);
+  inputLoanAmount.value = "";
 });
