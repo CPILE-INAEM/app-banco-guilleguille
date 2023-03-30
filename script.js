@@ -152,6 +152,8 @@ btnLogin.addEventListener("click", (e) => {
     inputTransferAmount.value = "";
     inputTransferTo.value = "";
     inputLoanAmount.value = "";
+    inputCloseUsername.value = "";
+    inputClosePin.value = "";
 
     // Mostrar datos:
     updateUI(currentAccount);
@@ -280,11 +282,12 @@ const transfer = function () {
   );
 
   console.log(`targetAccount= ${targetAccount}`);
-
-  if (ammount <= 0) {
-    alert("La cantidad de la  transferencia debe ser mayor que 0");
-  } else if (!targetAccount) {
+  if (!targetAccount) {
     alert("No se encuentra la cuenta de destino");
+  } else if (accountName === activeAccount.username) {
+    alert("Una cuenta no puede transferirse dinero a sí misma");
+  } else if (ammount <= 0) {
+    alert("La cantidad de la  transferencia debe ser mayor que 0");
   } else if (ammount > currentBalance) {
     alert("No se dispone de la cantidad especificada");
   } else {
@@ -349,4 +352,52 @@ btnLoan.addEventListener("click", (e) => {
   Loan();
   updateUI(activeAccount);
   inputLoanAmount.value = "";
+});
+// Cerrar cuenta:
+
+const logout = function () {
+  labelWelcome.textContent = `Log in to get started`;
+  containerApp.style.opacity = 0;
+};
+
+const closeAccount = function () {
+  const usernameClose = inputCloseUsername.value;
+  console.log(`Close: ${usernameClose}`);
+  const pinClose = Number(inputClosePin.value);
+  console.log(`Close: ${pinClose}`);
+
+  if (
+    activeAccount.username === usernameClose &&
+    activeAccount.pin === pinClose
+  ) {
+    console.log(`Login close correcto.`);
+    // console.log(activeAccount);
+
+    if (confirm(`¿Quieres cancelar la cuenta?`) == true) {
+      const activeAccountIndex = accounts.findIndex(
+        (account) =>
+          account.username === usernameClose && account.pin === pinClose
+      );
+
+      console.log(`Index de cuenta activa: `, activeAccountIndex);
+      accounts.splice(activeAccountIndex, 1);
+      console.log(accounts);
+      alert(`Cuenta eliminada`);
+      logout();
+    } else {
+      alert(`Operación cancelada`);
+      inputCloseUsername.value = "";
+      inputClosePin.value = "";
+      console.log(accounts);
+    }
+  } else {
+    alert(`Datos incorrectos.`);
+    inputCloseUsername.value = "";
+    inputClosePin.value = "";
+  }
+};
+
+btnClose.addEventListener("click", (e) => {
+  e.preventDefault();
+  closeAccount();
 });
