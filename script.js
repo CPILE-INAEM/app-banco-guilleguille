@@ -316,14 +316,18 @@ const closeAccount = function () {
   console.log(`Close: ${usernameClose}`);
   const pinClose = Number(inputClosePin.value);
   console.log(`Close: ${pinClose}`);
-  
-  if (activeAccount.username === usernameClose && activeAccount.pin === pinClose) {
+
+  if (
+    activeAccount.username === usernameClose &&
+    activeAccount.pin === pinClose
+  ) {
     console.log(`Login close correcto.`);
     // console.log(activeAccount);
 
     if (confirm(`¿Quieres cancelar la cuenta?`) == true) {
       const activeAccountIndex = accounts.findIndex(
-        (account) => account.username === usernameClose
+        (account) =>
+          account.username === usernameClose && account.pin === pinClose
       );
 
       console.log(`Index de cuenta activa: `, activeAccountIndex);
@@ -331,18 +335,17 @@ const closeAccount = function () {
       console.log(accounts);
       alert(`Cuenta eliminada`);
       logout();
-
     } else {
       alert(`Operación cancelada`);
       inputCloseUsername.value = "";
       inputClosePin.value = "";
-    } 
-
+      console.log(accounts);
+    }
   } else {
     alert(`Datos incorrectos.`);
     inputCloseUsername.value = "";
     inputClosePin.value = "";
-  };
+  }
 };
 
 btnClose.addEventListener("click", (e) => {
