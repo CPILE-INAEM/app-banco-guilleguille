@@ -353,8 +353,8 @@ btnLoan.addEventListener("click", (e) => {
   updateUI(activeAccount);
   inputLoanAmount.value = "";
 });
-// Cerrar cuenta:
 
+// Cerrar cuenta:
 const logout = function () {
   labelWelcome.textContent = `Log in to get started`;
   containerApp.style.opacity = 0;
@@ -401,3 +401,7 @@ btnClose.addEventListener("click", (e) => {
   e.preventDefault();
   closeAccount();
 });
+
+// Contador de sesión:
+// Iniciar un contador de 5 minutos al iniciar sesión
+// Parar al cerrar sesión y resetear al volver a iniciarla
