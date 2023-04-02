@@ -4,7 +4,7 @@
 /////////////////////////////////////////////////
 // BANKIST APP
 
-// Data
+// Data:
 const account1 = {
   owner: "Juan Sánchez",
   movements: [
@@ -88,7 +88,7 @@ const createBalance = function () {
   });
 };
 
-// Elements
+// Elements:
 const labelWelcome = document.querySelector(".welcome");
 const labelDate = document.querySelector(".date");
 const labelBalance = document.querySelector(".balance__value");
@@ -114,8 +114,11 @@ const inputLoanAmount = document.querySelector(".form__input--loan-amount");
 const inputCloseUsername = document.querySelector(".form__input--user");
 const inputClosePin = document.querySelector(".form__input--pin");
 
+let session = false;
 let activeAccount = {};
 let sort = true;
+let intervalID;
+const timeLimit = 60 * 5;
 
 console.log(accounts);
 createUsernames();
@@ -125,7 +128,14 @@ btnLogin.addEventListener("click", (e) => {
   e.preventDefault();
   const username = inputLoginUsername.value;
   const pin = Number(inputLoginPin.value);
-  console.log(`Intento de login con usuario ${username} y el pin ${pin}`);
+
+  if (session == true) {
+    if (confirm(`¿Quieres cerrar sesión?`) == true) {
+      alert(`Gracias por su visita`);
+      logout();
+    }
+  } else {
+    console.log(`Intento de login con usuario ${username} y el pin ${pin}`);
 
   // Find:
   const currentAccount = accounts.find(
@@ -154,11 +164,20 @@ btnLogin.addEventListener("click", (e) => {
     inputLoanAmount.value = "";
     inputCloseUsername.value = "";
     inputClosePin.value = "";
+    session = true;
 
     // Mostrar datos:
     updateUI(currentAccount);
-  } else {
+
+    // Mostrar operaciones más recientes:
+    sortDates(currentAccount);
+
+    // Inicir contador:
+    startTimer(timeLimit);
+
+    } else {
     console.log(`Login incorrecto.`);
+    }
   }
 });
 
@@ -175,9 +194,6 @@ const updateUI = (currentAccount) => {
 
   // Mostrar resumen:
   calcAndDisplaySummary(currentAccount);
-
-  // Mostrar operaciones más recientes por defecto:
-  sortDates(currentAccount);
 };
 
 const displayMovements = (currentAccount) => {
@@ -239,7 +255,6 @@ const calcAndDisplaySummary = (currentAccount) => {
 };
 
 // Ordenar fechas:
-
 const sortDates = () => {
   const { movements } = activeAccount;
 
@@ -267,8 +282,7 @@ btnSort.addEventListener("click", (e) => {
   sortDates();
 });
 
-//Hacer transferencias
-
+// Hacer transferencias:
 const transfer = function () {
   const ammount = Number(inputTransferAmount.value);
   console.log(`ammount = ${ammount}`);
@@ -317,8 +331,7 @@ btnTransfer.addEventListener("click", (e) => {
   inputTransferTo.value = "";
 });
 
-//Petición de préstamos
-
+// Petición de préstamos:
 const Loan = function () {
   const ammount = Number(inputLoanAmount.value);
   const allowedAmmount = activeAccount.balance * 0.3;
@@ -354,12 +367,16 @@ btnLoan.addEventListener("click", (e) => {
   inputLoanAmount.value = "";
 });
 
-// Cerrar cuenta:
+// Cerrar sesión:
 const logout = function () {
   labelWelcome.textContent = `Log in to get started`;
   containerApp.style.opacity = 0;
+  activeAccount = null;
+  session = false;
+  clearInterval(intervalID);
 };
 
+// Cerrar cuenta:
 const closeAccount = function () {
   const usernameClose = inputCloseUsername.value;
   console.log(`Close: ${usernameClose}`);
@@ -403,5 +420,24 @@ btnClose.addEventListener("click", (e) => {
 });
 
 // Contador de sesión:
-// Iniciar un contador de 5 minutos al iniciar sesión
-// Parar al cerrar sesión y resetear al volver a iniciarla
+const startTimer = function (duration) {
+  let timer = duration, minutes, seconds;
+  intervalID = setInterval(function () {
+    minutes = parseInt(timer / 60, 10);
+    seconds = parseInt(timer % 60, 10);
+
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    seconds = seconds < 10 ? "0" + seconds : seconds;
+
+    labelTimer.textContent = minutes + ":" + seconds;
+
+    if (--timer < 0) {
+      timer = duration;
+    }
+
+    if (minutes == 0 && seconds == 0) {
+      alert(`La sesión ha caducado`);
+      logout();
+    }
+  }, 1000);
+}
